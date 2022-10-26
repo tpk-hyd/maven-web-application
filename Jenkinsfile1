@@ -1,0 +1,31 @@
+node {
+echo "The JobName is :${env.JOB_NAME}"
+echo "The Node name is :${env.NODE_NAME}"
+echo "The Build no is :${env.BUILD_NUMBER}"
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * *')])])
+def mavenHome = tool name: 'maven3.8.5'
+
+stage('CheckOutCode')
+{
+git branch: 'development', credentialsId: 'e74431d2-8a57-4930-9e94-6851009895a1', url: 'https://github.com/tpk-hyd/maven-web-application.git'
+}
+stage('Build')
+{
+sh "${mavenHome}/bin/mvn clean package"
+}
+stage('ExcuteSonarQubeReport')
+{
+sh "${mavenHome}/bin/mvn clean sonar:sonar"
+}
+stage('UploadArtifactsIntoNexus')
+{
+sh "${mavenHome}/bin/mvn clean deploy"
+}
+
+stage('DeployAppIntoTomcatServer')
+{
+sshagent(['112ba3b4-faec-4ca4-9e8d-cdf12803f698']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.43.247:/opt/apache-tomcat-9.0.67/webapps/"
+}
+}
+}
