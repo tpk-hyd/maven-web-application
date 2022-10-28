@@ -47,7 +47,8 @@ sshagent(['112ba3b4-faec-4ca4-9e8d-cdf12803f698']) {
             echo 'Deploy - Frontend'
         }
 
-  } catch (e) {
+  } 
+  catch (e) {
     // If there was an exception thrown, the build failed
     currentBuild.result = "FAILED"
     throw e
