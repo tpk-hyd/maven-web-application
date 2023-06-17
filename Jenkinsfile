@@ -25,7 +25,7 @@ pipeline
         {
           steps
             {
-                sshagent(['f9792aae-573b-42f1-9496-053334fecb35']) 
+                sshagent(['9a6d4398-6d54-4451-a04e-041ad16cc0c5']) 
                 {
                     sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/17JUNE-DECLERATIVEWAY/target/maven-web-application.war ec2-user@172.31.38.230:/opt/tomcat9/webapps/"    
                 }
