@@ -1,3 +1,40 @@
+pipeline
+{   agent any
+    tools 
+    {
+        maven 'Maven 3.8.2'
+    }
+    stages
+    {
+        stage('CheckOutCode')
+        {
+            steps
+            {
+                git branch: 'master', credentialsId: '32894d77-9108-40d7-86ba-5ea7178c1da4', url: 'https://github.com/tpk-hyd/maven-web-application.git'
+	        }
+         }
+    
+        stage('Build')
+        {
+            steps
+            {
+                sh "mvn clean package"
+            }
+        }
+        stage('DeployAppIntoTomcat')
+        {
+          steps
+            {
+                sshagent(['f9792aae-573b-42f1-9496-053334fecb35']) 
+                {
+                    sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/16JUNE-SCRIPTED/target/maven-web-application.war ec2-user@172.31.38.230:/opt/tomcat9/webapps/"    
+                }
+            }
+        }
+    }
+}
+
+/*
 node
 {
     stage('CheckOutCode')
@@ -17,6 +54,7 @@ node
         }
     }
 }
+*/
 
 /* 
 pipeline{
